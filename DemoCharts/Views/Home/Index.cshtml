@@ -1,0 +1,116 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div id="columnchart_values1" style="width: 900px; height: 300px;"></div>
+<div id="columnchart_values2" style="width: 900px; height: 300px;"></div>
+<div id="donutchart123" style="width: 900px; height: 500px;"></div>
+
+<script type="text/javascript">
+    
+    google.charts.load("current", { packages: ["corechart"] });
+    google.charts.setOnLoadCallback(LoadDataPieChart);
+    google.charts.setOnLoadCallback(LoadDataPieChart);
+    google.charts.setOnLoadCallback(drawColumn2Chart);
+
+    function LoadDataPieChart() {
+        $.ajax({
+            url: 'https://api.coincap.io/v2/assets',
+            type: 'GET',
+            success: function (result) {
+                drawPieChart(result.data);
+                drawColumn1Chart(result.data)
+                // drawColumn2Chart(result.data)
+            },
+            error: function (err) {
+                console.log(err);
+            }
+        });
+    }
+
+    // PieChart
+    function drawPieChart(data) {
+        console.log(data)
+        var arr = [
+            ['Coin', 'Price']
+        ];
+        for (let i = 0; i < 10; i++) {
+            arr.push([data[i].name, parseFloat(data[i].priceUsd)]);
+        }
+        var data = google.visualization.arrayToDataTable(arr);
+        var options = {
+            title: 'My Daily Activities',
+            pieHole: 0.4,
+        };
+        var chart = new google.visualization.PieChart(document.getElementById('donutchart'));
+        chart.draw(data, options);
+    }
+
+    // ColumnChart
+    
+    function drawColumn1Chart(data) {
+    // ["Copper", 8.94, "#b87333"],
+        var arr1 = [
+            ["Element", "Density", { role: "style" }]
+        ];
+
+        for (let i = 20; i < 30; i++) {
+            arr1.push([data[i].name, parseFloat(data[i].priceUsd), "#b" + i + "7100"]);
+        }
+
+        var data = google.visualization.arrayToDataTable(arr1);
+        var view = new google.visualization.DataView(data);
+        view.setColumns([0, 1,
+            {
+                calc: "stringify",
+                sourceColumn: 1,
+                type: "string",
+                role: "annotation"
+            },
+            2]);
+
+        var options = {
+            title: "Density of Precious Metals, in g/cm^3",
+            width: 600,
+            height: 400,
+            bar: { groupWidth: "95%" },
+            legend: { position: "none" },
+        };
+        var chart = new google.visualization.ColumnChart(document.getElementById("columnchart_values1"));
+        chart.draw(view, options);
+    }
+
+    function drawColumn2Chart() {
+        var data = google.visualization.arrayToDataTable([
+            ["Element", "Density", { role: "style" }],
+            ["Copper", 8.94, "#b87333"],
+            ["Silver", 10.49, "silver"],
+            ["Gold", 19.30, "gold"],
+            ["Platinum", 21.45, "color: #e5e4e2"],
+            ['aaaa', 5, "red"],
+            ['bbbb', 10, "green"],
+            ['cccc', 15, "blue"]
+        ]);
+
+        var view = new google.visualization.DataView(data);
+        view.setColumns([0, 1,
+            {
+                calc: "stringify",
+                sourceColumn: 1,
+                type: "string",
+                role: "annotation"
+            },
+            2]);
+
+        var options = {
+            title: "Density of Precious Metals, in g/cm^3",
+            width: 600,
+            height: 400,
+            bar: { groupWidth: "95%" },
+            legend: { position: "none" },
+        };
+        var chart = new google.visualization.ColumnChart(document.getElementById("columnchart_values2"));
+        chart.draw(view, options);
+    }
+
+</script>
